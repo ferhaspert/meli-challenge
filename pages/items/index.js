@@ -20,7 +20,7 @@ const SearchIndex = () => {
                 setResults(items)
             })
             .catch(err => {
-                setErrors(err.message)
+                setErrors(err.response.data)
             })
     }, [search])
 

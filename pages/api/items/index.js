@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const BASE_URL = process.env.BASE_URL;
 const SEARCH_AMOUNT = process.env.SEARCH_AMOUNT;
+const DEFAULT_ERROR_MESSAGE = process.env.DEFAULT_ERROR_MESSAGE
 const FILTER_ID = "category"
 
 const filterById = ({id}) => id === FILTER_ID
@@ -43,6 +44,6 @@ export default async function handle(req, res) {
     }).then(response => {
         res.status(200).json(transform(response))
     }).catch(err => {
-        res.status(err.response.status).send(err.response.data.message)
+        res.status(err.response.status).send(DEFAULT_ERROR_MESSAGE)
     })
 }

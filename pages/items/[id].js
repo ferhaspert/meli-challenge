@@ -58,7 +58,7 @@ const ItemDetail = () => {
                 setItem(item);
             })
             .catch(err => {
-                setErrors(err.message)
+                setErrors(err.response.data)
             })
     }, [id])
 

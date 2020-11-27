@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const BASE_URL = process.env.BASE_URL;
+const DEFAULT_ERROR_MESSAGE = process.env.DEFAULT_ERROR_MESSAGE
 
 const transform = ({detailResponse, descriptionResponse}) => {
     const {id, title, currency_id, price, pictures, condition, sold_quantity, shipping, category_id } = detailResponse.data;
@@ -33,9 +34,9 @@ export default async function handle(req, res) {
     await Promise.all([
       axios.get(`${BASE_URL}items/${itemId}`), 
       axios.get(`${BASE_URL}items/${itemId}` + "/description")
-    ]).then(([detailResponse, descriptionResponse]) => {
-        res.status(200).json(transform({detailResponse, descriptionResponse}))
-    }).catch(err => {
-        res.status(err.response.status).send(err.response.data.message)
-    })
+        ]).then(([detailResponse, descriptionResponse]) => {
+            res.status(200).json(transform({detailResponse, descriptionResponse}))
+        }).catch(err => {
+            res.status(err.response.status).send(DEFAULT_ERROR_MESSAGE)
+        })
 }
