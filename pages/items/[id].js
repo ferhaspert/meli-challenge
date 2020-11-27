@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import SearchBar from '../../components/SearchBar';
-import { Breadcrumb, BreadcrumbItem, Button, Col, Container, Row } from 'reactstrap';
+import { Breadcrumb, BreadcrumbItem, Button, Col, Container, Row, Alert } from 'reactstrap';
 import PriceFormat from '../../components/PriceFormat';
 import { getItemById } from '../../client/items'
 import { getCategoryById } from '../../client/categories' 
@@ -47,34 +47,48 @@ const Detail = ({ picture, description, condition, sold_quantity, title, price }
 const ItemDetail = () => {
     const [item, setItem] = useState()
     const [category, setCategory] = useState("")
+    const [errors, setErrors] = useState()
     const router = useRouter()
     const {id} = router.query
     
     useEffect(() => {
-        id && getItemById(id).then(res => {
+        id && getItemById(id)
+            .then(res => {
                 const {item} = res.data
                 setItem(item);
-                // getCategory(item.category)
+            })
+            .catch(err => {
+                setErrors(err.message)
             })
     }, [id])
 
     useEffect(() => {
-        item && item.category_id && getCategoryById(item.category_id).then(res => {
-            setCategory(res.data)
-        })
+        item && item.category_id && getCategoryById(item.category_id)
+            .then(res => {
+                setCategory(res.data)
+            })
+            .catch(err => {
+                // aca habria que manejarlo de alguna forma. Lo logueo para que la pagina se pueda seguir
+                // navegando y usando aunque no se muestre el breadcrumb
+                console.log(err)
+            })
     }, [item])
-
-    if(!item) {
-        return null
-    }
 
     return <>
         <SearchBar />
         <Container>
-        <Breadcrumb>
-            <BreadcrumbItem active>{category}</BreadcrumbItem>
-        </Breadcrumb>
-            <Detail {...item} />
+            {errors ? 
+                <Alert color="danger">
+                    {errors}
+                </Alert> :   
+                item &&   
+                <>
+                    <Breadcrumb>
+                        <BreadcrumbItem active>{category}</BreadcrumbItem>
+                    </Breadcrumb>
+                    <Detail {...item} />
+                </>
+            }
         </Container>
     </>
 }

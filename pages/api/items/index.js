@@ -2,12 +2,15 @@ import axios from 'axios';
 
 const BASE_URL = process.env.BASE_URL;
 const SEARCH_AMOUNT = process.env.SEARCH_AMOUNT;
+const FILTER_ID = "category"
 
-const transform = (response) => {
-    const filters = response.data.filters.filter(c => c.id === "category");
-    const categories = filters[0].values.map(c => (c.name))
+const filterById = ({id}) => id === FILTER_ID
 
-    const items = response.data.results.splice(0,SEARCH_AMOUNT).map(({ id, title, price, currency_id, thumbnail, condition, shipping, address, category_id }) => ({
+const transform = ({ data }) => {
+    const filter = data.filters.find(filterById) || data.available_filters.find(filterById);
+    const categories = filter ? filter.values.map(({name}) => (name)) : []
+
+    const items = data.results.splice(0,SEARCH_AMOUNT).map(({ id, title, price, currency_id, thumbnail, condition, shipping, address, category_id }) => ({
         id,
         title,
         price: {
@@ -32,13 +35,14 @@ const transform = (response) => {
     }
 }
 
-// TODO: errores en la api
-
 export default async function handle(req, res) {
-    const response = await axios.get(`${BASE_URL}sites/MLA/search`, {
+    await axios.get(`${BASE_URL}sites/MLA/search`, {
         params: {
             q: req.query.search
         }
+    }).then(response => {
+        res.status(200).json(transform(response))
+    }).catch(err => {
+        res.status(err.response.status).send(err.response.data.message)
     })
-    res.status(200).json(transform(response))
 }

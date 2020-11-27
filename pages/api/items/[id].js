@@ -30,9 +30,12 @@ const transform = ({detailResponse, descriptionResponse}) => {
 
 export default async function handle(req, res) {
     const itemId = req.query.id
-    const [detailResponse, descriptionResponse] = await Promise.all([
+    await Promise.all([
       axios.get(`${BASE_URL}items/${itemId}`), 
       axios.get(`${BASE_URL}items/${itemId}` + "/description")
-    ])
-    res.status(200).json(transform({detailResponse, descriptionResponse}))
+    ]).then(([detailResponse, descriptionResponse]) => {
+        res.status(200).json(transform({detailResponse, descriptionResponse}))
+    }).catch(err => {
+        res.status(err.response.status).send(err.response.data.message)
+    })
 }
