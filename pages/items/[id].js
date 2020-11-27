@@ -64,8 +64,8 @@ const ItemDetail = () => {
 
     useEffect(() => {
         item && item.category_id && getCategoryById(item.category_id)
-            .then(res => {
-                setCategory(res.data)
+            .then(({data}) => {
+                setCategory(data.name)
             })
             .catch(err => {
                 // aca habria que manejarlo de alguna forma. Lo logueo para que la pagina se pueda seguir

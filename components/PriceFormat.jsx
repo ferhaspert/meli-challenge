@@ -1,14 +1,6 @@
 import React from "react";
 import NumberFormat from "react-number-format";
-
-const getCurrencySymbol = (currency) => {
-  switch (currency) {
-    case "ARS":
-      return "$ ";
-    case "USD":
-      return "U$S ";
-  }
-};
+import { getCurrencySymbol } from "../utils/priceFormat";
 
 const PriceFormat = ({ amount, currency }) => (
   <NumberFormat
